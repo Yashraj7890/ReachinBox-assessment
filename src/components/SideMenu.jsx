@@ -41,11 +41,11 @@ const SideMenu = (
         }
     }
 
-    const handleClick = (a, e) => {
+    const handleClick = (threadId, email) => {
         handleClickSmallWidth();
-        setSelected(a);
-        setUserInfo(e);
-        setId(a);
+        setSelected(threadId);
+        setUserInfo(email);
+        setId(threadId);
     }
 
     const truncateHtml = (html, maxLength) => {
