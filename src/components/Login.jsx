@@ -10,7 +10,7 @@ const Login = ({ isLoggedin, setLoggedin, isDarkMode, setMode }) => {
 
   const signInWithGoogle = () => {
     const loginUrl = 'https://hiring.reachinbox.xyz/api/v1/auth/google-login';
-    const redirectUrl = encodeURIComponent('http://localhost:3000/onebox/');
+    const redirectUrl = encodeURIComponent(process.env.REACT_APP_URL+'/onebox/');
     window.location.href = `${loginUrl}?redirect_to=${redirectUrl}`;
   };
 
