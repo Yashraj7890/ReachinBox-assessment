@@ -8,20 +8,19 @@ import Thread from './Thread';
 
 const Onebox = ({ isLoggedin, setLoggedin, isDarkMode, setMode }) => {
 
-  const [sideMenu, setMenu] = useState(window.innerWidth >= 639);
+  const [sideMenu, setSideMenu] = useState(window.innerWidth >= 639);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 639);
   const [mails, setMails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [Id, setId] = useState(null);
   const [thread, setThread] = useState([]);
-  const [fetchingThread, setFetching] = useState(false);
-  const [userInfo,setUser]=useState({});
-  const [replyText, setReply] = useState("");
-  const [open, setOpen] = useState(false);
+  const [fetchingThread, setFetchingThread] = useState(false);
+  const [userInfo,setUserInfo]=useState({});
+  const [openEditor, setOpenEditor] = useState(false);
 
-  const handleClick1 = (type) => {
+  const handleClickSmallWidth = (type) => {
     if (window.innerWidth < 639) {
-      setMenu(false);
+      setSideMenu(false);
     }
   };
 
@@ -39,7 +38,7 @@ const Onebox = ({ isLoggedin, setLoggedin, isDarkMode, setMode }) => {
   useEffect(() => {
     const fetchThread = async () => {
       if (Id != null) {
-        setFetching(true);
+        setFetchingThread(true);
         try {
           const token = localStorage.getItem('authToken');
           const res = await fetch("https://hiring.reachinbox.xyz/api/v1/onebox/messages/" + Id, {
@@ -57,7 +56,7 @@ const Onebox = ({ isLoggedin, setLoggedin, isDarkMode, setMode }) => {
         } catch (error) {
           console.error('Error fetching thread:', error);
         } finally {
-          setFetching(false);
+          setFetchingThread(false);
         }
       }
     };
@@ -148,7 +147,7 @@ const Onebox = ({ isLoggedin, setLoggedin, isDarkMode, setMode }) => {
       <div className="pl-[4rem] pt-16 h-screen w-screen ">
         <div className='flex h-full  w-full p-[0px]'>
 
-          <SideMenu setUser={setUser} setOpen={setOpen} setId={setId} sideMenu={sideMenu} setMenu={setMenu} handleClick1={handleClick1} mails={mails} setMails={setMails} loading={loading} setLoading={setLoading} isDarkMode={isDarkMode}></SideMenu>
+          <SideMenu setUserInfo={setUserInfo} setOpenEditor={setOpenEditor} setId={setId} sideMenu={sideMenu} setSideMenu={setSideMenu} handleClickSmallWidth={handleClickSmallWidth} mails={mails} setMails={setMails} loading={loading} setLoading={setLoading} isDarkMode={isDarkMode}></SideMenu>
 
           <div
             className={`flex-1 w-full overflow-y-auto h-full flex flex-col items-start justify-start  bg-gray-100 ${isSmallScreen && sideMenu ? "hidden" : "flex"
@@ -158,7 +157,7 @@ const Onebox = ({ isLoggedin, setLoggedin, isDarkMode, setMode }) => {
             {Id == null ? (<div className={` ${isDarkMode ? 'bg-black text-white ' : 'bg-[#FFFFFF] text-black'} w-full h-full flex flex-col items-center justify-center`}><div>Choose a thread from the right sidebar</div>
               <div>You can also choose to reset the data by refreshing/reloading this page</div></div>) : (<>
               {fetchingThread ? (<div className={` ${isDarkMode ? 'bg-black text-white ' : 'bg-[#FFFFFF] text-black'} w-full h-full flex flex-col items-center justify-center`}><i class="fa-solid fa-spinner fa-spin text-[2rem]"></i></div>) : (<>
-                <Thread userInfo={userInfo} thread={thread} open={open} setOpen={setOpen} replyText={replyText} setReply={setReply} setMails={setMails} Id={Id} setId={setId} mails={mails} isDarkMode={isDarkMode}></Thread>
+                <Thread setUserInfo={setUserInfo} userInfo={userInfo} thread={thread} openEditor={openEditor} setOpenEditor={setOpenEditor} setMails={setMails} Id={Id} setId={setId} mails={mails} isDarkMode={isDarkMode}></Thread>
               </>)}
             </>)}
 

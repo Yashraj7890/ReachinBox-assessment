@@ -3,16 +3,16 @@ import { HiChevronDoubleLeft, HiChevronDoubleRight } from "react-icons/hi2";
 import "../index.css";
 
 const SideMenu = (
-    { setMenu,
-        setUser,
+    {   setSideMenu,
+        setUserInfo,
         sideMenu,
         mails,
         setMails,
         loading,
         setLoading,
         setId,
-        setOpen,
-        handleClick1,
+        setOpenEditor,
+        handleClickSmallWidth,
         isDarkMode }) => {
 
     const [selected, setSelected] = useState(null);
@@ -42,9 +42,9 @@ const SideMenu = (
     }
 
     const handleClick = (a, e) => {
-        handleClick1();
+        handleClickSmallWidth();
         setSelected(a);
-        setUser(e);
+        setUserInfo(e);
         setId(a);
     }
 
@@ -63,7 +63,7 @@ const SideMenu = (
                 flex flex-col items-center justify-start transition-all duration-200 ease-in-out`}
             >
                 <div
-                    onClick={() => setMenu(!sideMenu)}
+                    onClick={() => setSideMenu(!sideMenu)}
                     className={`w-8 h-8 ${isDarkMode ? 'bg-black border-r-[2px] border-[#343A40]' : 'bg-white border-r-[2px] border-[#D8D8D8]'}  rounded-3xl absolute -right-3 z-[0] bottom-[50vh] flex items-center justify-center cursor-pointer`}
                 >
                     {sideMenu ? (
@@ -141,7 +141,7 @@ const SideMenu = (
                                 </div>);})}
                                 </div>
                             </div>
-                           )}
+                        )}
                 </div>
             </div>
         </div>

@@ -2,10 +2,10 @@ import React, { useRef, useEffect } from 'react';
 import Swal from "sweetalert2";
 import { useState } from 'react';
 
-const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode, userInfo }) => {
+const Thread = ({ thread, setOpenEditor, openEditor, setMails, setId, Id, mails, isDarkMode, userInfo }) => {
 
     const [latestMail, setLatestMail] = useState({});
-    const [replyText, setReply] = useState("");
+    const [replyText, setReplyText] = useState("");
     const [replySubject, setSubject] = useState("");
     const [replyReferences, setReferences] = useState([]);
     const [sending, setSending] = useState(false);
@@ -14,20 +14,20 @@ const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode,
     const textAreaRef = useRef(null);
 
     const handleReplyClick = () => {
-        setOpen(true);
+        setOpenEditor(true);
     };
 
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.shiftKey && event.key === 'R') {
-                if(open===false) setOpen(true);
+                if(openEditor===false) setOpenEditor(true);
                 setShiftRPressed(true);
             }
         };
 
         const handleKeyUp = (event) => {
             if (event.shiftKey && event.key === 'R') {
-                if(open===false) setOpen(true);
+                if(openEditor===false) setOpenEditor(true);
                 setShiftRPressed(false);
             }
         };
@@ -67,7 +67,7 @@ const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode,
     }, []);
     
     useEffect(() => {
-        if (open) {
+        if (openEditor) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -75,7 +75,7 @@ const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode,
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [open]);
+    }, [openEditor]);
 
     useEffect(() => {
         const prepareReply = () => {
@@ -198,7 +198,7 @@ const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode,
 
     const handleClickOutside = (event) => {
         if (textAreaRef.current && !textAreaRef.current.contains(event.target)) {
-            setOpen(false);
+            setOpenEditor(false);
         }
     };
 
@@ -241,14 +241,15 @@ const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode,
                         </div>
 
 
-                        {open && (
+                        {openEditor && (
                             <>
+                              
                                 <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
                                 <div className="fixed inset-0 flex items-center justify-center z-50">
                                     <div ref={textAreaRef} className={`border ${isDarkMode ? "bg-[#141517] border-[#343A40]" : "bg-white border-[#D8D8D8]"}  rounded-lg shadow-xl w-[60vw] h-[33rem] relative z-50`}>
                                     <div className={`rounded-tl-md rounded-tr-md flex justify-between py-[0.4rem] border-b ${isDarkMode ? "text-white bg-[#1F1F1F] border-[#343A40]" : "text-black bg-[#f5f5f5]  border-[#D8D8D8]"}`}>
                                         <span className="mx-[2rem]">Reply</span>
-                                        <span className="cursor-pointer mx-[1rem]" onClick={() => setOpen(false)}>
+                                        <span className="cursor-pointer mx-[1rem]" onClick={() => setOpenEditor(false)}>
                                         <i className="fa-solid fa-xmark"></i>
                                         </span>
                                     </div>
@@ -275,7 +276,7 @@ const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode,
 
                                             <textarea
                                                 value={replyText}
-                                                onChange={(e) => setReply(e.target.value)}
+                                                onChange={(e) => setReplyText(e.target.value)}
                                                 rows="12"
                                                 cols="40"
                                                 placeholder="Type your reply here..."
