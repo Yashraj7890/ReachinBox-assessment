@@ -6,17 +6,15 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Login from './components/Login';
 import Onebox from './components/Onebox';
 
 
 function App() {
+
   const [isLoggedin, setLoggedin] = useState(false);
   const [isDarkMode, setMode] = useState(true);
-  useEffect(() => {
-  }, []);
-
 
   return (
     <>

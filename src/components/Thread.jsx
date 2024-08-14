@@ -3,11 +3,6 @@ import Swal from "sweetalert2";
 import { useState } from 'react';
 
 const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode, userInfo }) => {
-    const textAreaRef = useRef(null);
-
-    const handleReplyClick = () => {
-        setOpen(true);
-    };
 
     const [latestMail, setLatestMail] = useState({});
     const [replyText, setReply] = useState("");
@@ -15,6 +10,12 @@ const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode,
     const [replyReferences, setReferences] = useState([]);
     const [sending, setSending] = useState(false);
     const [shiftRPressed, setShiftRPressed] = useState(false);
+
+    const textAreaRef = useRef(null);
+
+    const handleReplyClick = () => {
+        setOpen(true);
+    };
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -63,6 +64,31 @@ const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode,
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
+    }, []);
+    
+    useEffect(() => {
+        if (open) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [open]);
+
+    useEffect(() => {
+        const prepareReply = () => {
+            const foundMail = mails.find(mail => mail.threadId === Id);
+            const messageIds = new Set();
+            mails.forEach(email => {
+                messageIds.add(email.messageId);
+            });
+            const uniqueMessageIds = Array.from(messageIds);
+            setReferences(uniqueMessageIds);
+            setLatestMail(foundMail);
+        }
+        prepareReply();
     }, []);
 
     const sendReply = async () => {
@@ -176,35 +202,14 @@ const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode,
         }
     };
 
-    useEffect(() => {
-        if (open) {
-            document.addEventListener('mousedown', handleClickOutside);
-        } else {
-            document.removeEventListener('mousedown', handleClickOutside);
-        }
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [open]);
-
-    useEffect(() => {
-        const prepareReply = () => {
-            const foundMail = mails.find(mail => mail.threadId === Id);
-            const messageIds = new Set();
-            mails.forEach(email => {
-                messageIds.add(email.messageId);
-            });
-            const uniqueMessageIds = Array.from(messageIds);
-            setReferences(uniqueMessageIds);
-            setLatestMail(foundMail);
-        }
-        prepareReply();
-    }, []);
+  
 
     return (
         <>
             <div className='flex flex-row w-full h-full overflow-hidden'>
+
                 <div className='w-[70%] h-full transition-all duration-200 ease-in-out'>
+
                     <div className={`h-[5rem] flex items-center ${isDarkMode ? "bg-black border-b-[2px] border-[#343A40]" : "bg-[#FFFFFF] border-b-[2px] border-[#D8D8D8]"}`}>
                         <div className='ml-[2rem]'>
                             <div className={`text-[1.5rem] ${isDarkMode ? "text-white" : "text-black"}`}>User</div>
@@ -233,25 +238,20 @@ const Thread = ({ thread, setOpen, open, setMails, setId, Id, mails, isDarkMode,
                                     </div>
                                 </div>
                             ))}
-
-
                         </div>
 
 
                         {open && (
                             <>
-                                {/* Overlay for dimming the background */}
                                 <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
-
-                                {/* Modal content */}
                                 <div className="fixed inset-0 flex items-center justify-center z-50">
                                     <div ref={textAreaRef} className={`border ${isDarkMode ? "bg-[#141517] border-[#343A40]" : "bg-white border-[#D8D8D8]"}  rounded-lg shadow-xl w-[60vw] h-[33rem] relative z-50`}>
-                                        <div className={`rounded-tl-md rounded-tr-md flex justify-between py-[0.4rem] border-b ${isDarkMode ? "text-white bg-[#1F1F1F] border-[#343A40]" : "text-black bg-[#f5f5f5]  border-[#D8D8D8]"}`}>
-                                            <span className="mx-[2rem]">Reply</span>
-                                            <span className="cursor-pointer mx-[1rem]" onClick={() => setOpen(false)}>
-                                                <i className="fa-solid fa-xmark"></i>
-                                            </span>
-                                        </div>
+                                    <div className={`rounded-tl-md rounded-tr-md flex justify-between py-[0.4rem] border-b ${isDarkMode ? "text-white bg-[#1F1F1F] border-[#343A40]" : "text-black bg-[#f5f5f5]  border-[#D8D8D8]"}`}>
+                                        <span className="mx-[2rem]">Reply</span>
+                                        <span className="cursor-pointer mx-[1rem]" onClick={() => setOpen(false)}>
+                                        <i className="fa-solid fa-xmark"></i>
+                                        </span>
+                                    </div>
 
                                         <div>
                                             <div className={`${isDarkMode ? "border-[#343A40]" : "border-[#D8D8D8]"} text-[#515960] text-sm border-b px-[2rem] py-[0.4rem]`}>

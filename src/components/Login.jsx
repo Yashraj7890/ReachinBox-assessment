@@ -54,7 +54,7 @@ const Login = ({ isLoggedin, setLoggedin, isDarkMode, setMode }) => {
               </div>
             </>
           )}
-        </div>
+        </div> 
       </div>
       <div className='text-white bg-[#25262B] h-[8%] pt-[0.6rem] overflow-hidden text-center'>© 2023 ReachinBox. All rights reserved</div>
 
