@@ -17,6 +17,16 @@ const Onebox = ({ isLoggedin, setLoggedin, isDarkMode, setMode }) => {
   const [fetchingThread, setFetchingThread] = useState(false);
   const [userInfo,setUserInfo]=useState({});
   const [openEditor, setOpenEditor] = useState(false);
+ 
+
+  const clearLocalStorageExcept = (exceptKey) => {
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key !== exceptKey) {
+        localStorage.removeItem(key);
+      }
+    });
+  };
 
   const handleClickSmallWidth = (type) => {
     if (window.innerWidth < 639) {
@@ -99,7 +109,7 @@ const Onebox = ({ isLoggedin, setLoggedin, isDarkMode, setMode }) => {
         setLoading(false);
       }
     };
-
+    clearLocalStorageExcept('authToken');
     fetchData();
   }, []);
 

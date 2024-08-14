@@ -11,6 +11,21 @@ const Thread = ({ thread, setOpenEditor, openEditor, setMails, setId, Id, mails,
     const [sending, setSending] = useState(false);
     const [shiftRPressed, setShiftRPressed] = useState(false);
 
+    useEffect(() => {
+        if (openEditor) {
+            const savedSubject = localStorage.getItem(`subject-${latestMail.threadId}`);
+            const savedText = localStorage.getItem(`text-${latestMail.threadId}`);
+
+            if (savedSubject) setSubject(savedSubject);
+            if (savedText) setReplyText(savedText);
+        }
+    }, [openEditor, latestMail.threadId]);
+
+    const handleSave = () => {
+        localStorage.setItem(`subject-${latestMail.threadId}`, replySubject);
+        localStorage.setItem(`text-${latestMail.threadId}`, replyText);
+    };
+
     const textAreaRef = useRef(null);
 
     const handleReplyClick = () => {
@@ -20,14 +35,14 @@ const Thread = ({ thread, setOpenEditor, openEditor, setMails, setId, Id, mails,
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.shiftKey && event.key === 'R') {
-                if(openEditor===false) setOpenEditor(true);
+                if (openEditor === false) setOpenEditor(true);
                 setShiftRPressed(true);
             }
         };
 
         const handleKeyUp = (event) => {
             if (event.shiftKey && event.key === 'R') {
-                if(openEditor===false) setOpenEditor(true);
+                if (openEditor === false) setOpenEditor(true);
                 setShiftRPressed(false);
             }
         };
@@ -65,7 +80,7 @@ const Thread = ({ thread, setOpenEditor, openEditor, setMails, setId, Id, mails,
             window.removeEventListener('keyup', handleKeyUp);
         };
     }, []);
-    
+
     useEffect(() => {
         if (openEditor) {
             document.addEventListener('mousedown', handleClickOutside);
@@ -76,6 +91,8 @@ const Thread = ({ thread, setOpenEditor, openEditor, setMails, setId, Id, mails,
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [openEditor]);
+    
+   
 
     useEffect(() => {
         const prepareReply = () => {
@@ -103,7 +120,7 @@ const Thread = ({ thread, setOpenEditor, openEditor, setMails, setId, Id, mails,
             references: replyReferences,
             inReplyTo: latestMail.messageId
         };
-
+        console.log(replyData);
         const url = `https://hiring.reachinbox.xyz/api/v1/onebox/reply/${Id}`;
         const token = localStorage.getItem('authToken');
 
@@ -121,6 +138,11 @@ const Thread = ({ thread, setOpenEditor, openEditor, setMails, setId, Id, mails,
                 throw new Error(response.status);
             }
             const responseData = await response.json();
+
+            localStorage.removeItem(`subject-${latestMail.threadId}`);
+            localStorage.removeItem(`text-${latestMail.threadId}`);
+            setSubject('');
+            setReplyText('');
 
             Swal.fire({
                 title: 'Sent',
@@ -202,7 +224,7 @@ const Thread = ({ thread, setOpenEditor, openEditor, setMails, setId, Id, mails,
         }
     };
 
-  
+
 
     return (
         <>
@@ -242,65 +264,70 @@ const Thread = ({ thread, setOpenEditor, openEditor, setMails, setId, Id, mails,
 
 
                         {openEditor && (
-                            <>
-                              
-                                <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
-                                <div className="fixed inset-0 flex items-center justify-center z-50">
-                                    <div ref={textAreaRef} className={`border ${isDarkMode ? "bg-[#141517] border-[#343A40]" : "bg-white border-[#D8D8D8]"}  rounded-lg shadow-xl w-[60vw] h-[33rem] relative z-50`}>
-                                    <div className={`rounded-tl-md rounded-tr-md flex justify-between py-[0.4rem] border-b ${isDarkMode ? "text-white bg-[#1F1F1F] border-[#343A40]" : "text-black bg-[#f5f5f5]  border-[#D8D8D8]"}`}>
-                                        <span className="mx-[2rem]">Reply</span>
-                                        <span className="cursor-pointer mx-[1rem]" onClick={() => setOpenEditor(false)}>
-                                        <i className="fa-solid fa-xmark"></i>
-                                        </span>
-                                    </div>
+      <>
+        <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div ref={textAreaRef} className={`border ${isDarkMode ? "bg-[#141517] border-[#343A40]" : "bg-white border-[#D8D8D8]"} rounded-lg shadow-xl w-[60vw] h-[33rem] relative z-50`}>
+            <div className={`rounded-tl-md rounded-tr-md flex justify-between py-[0.4rem] border-b ${isDarkMode ? "text-white bg-[#1F1F1F] border-[#343A40]" : "text-black bg-[#f5f5f5]  border-[#D8D8D8]"}`}>
+              <span className="mx-[2rem]">Reply</span>
+              <span className="cursor-pointer mx-[1rem]" onClick={() => setOpenEditor(false)}>
+                <i className="fa-solid fa-xmark"></i>
+              </span>
+            </div>
 
-                                        <div>
-                                            <div className={`${isDarkMode ? "border-[#343A40]" : "border-[#D8D8D8]"} text-[#515960] text-sm border-b px-[2rem] py-[0.4rem]`}>
-                                                <span>To:</span>
-                                                <span className={`${isDarkMode ? "text-white" : "text-black"}`}> {latestMail.fromEmail}</span>
-                                            </div>
-                                            <div className={`${isDarkMode ? "border-[#343A40]" : "border-[#D8D8D8]"} text-[#515960] text-sm border-b px-[2rem] py-[0.4rem]`}>
-                                                <span>From:</span>
-                                                <span className={`${isDarkMode ? "text-white" : "text-black"}`}> {latestMail.toEmail}</span>
-                                            </div>
-                                            <div className={`flex flex-row h-[3.3rem] mb-[1rem] border-b ${isDarkMode ? "border-[#343A40]" : "border-[#D8D8D8]"}`}>
-                                                <span className="my-auto text-[#515960] text-sm pl-[2rem] pr-[1rem] py-[0.4rem]">Subject:</span>
-                                                <textarea
-                                                    rows="1"
-                                                    cols="30"
-                                                    className={`my-auto w-[50rem] p-2 border resize-none overflow-y-auto outline-none border-none ${isDarkMode ? "text-white bg-[#141517]" : "text-black bg-white"}`}
-                                                    onChange={(e) => setSubject(e.target.value)}
-                                                    value={replySubject}
-                                                />
-                                            </div>
+            <div>
+              <div className={`${isDarkMode ? "border-[#343A40]" : "border-[#D8D8D8]"} text-[#515960] text-sm border-b px-[2rem] py-[0.4rem]`}>
+                <span>To:</span>
+                <span className={`${isDarkMode ? "text-white" : "text-black"}`}> {latestMail.fromEmail}</span>
+              </div>
+              <div className={`${isDarkMode ? "border-[#343A40]" : "border-[#D8D8D8]"} text-[#515960] text-sm border-b px-[2rem] py-[0.4rem]`}>
+                <span>From:</span>
+                <span className={`${isDarkMode ? "text-white" : "text-black"}`}> {latestMail.toEmail}</span>
+              </div>
+              <div className={`flex flex-row h-[3.3rem] mb-[1rem] border-b ${isDarkMode ? "border-[#343A40]" : "border-[#D8D8D8]"}`}>
+                <span className="my-auto text-[#515960] text-sm pl-[2rem] pr-[1rem] py-[0.4rem]">Subject:</span>
+                <textarea
+                  rows="1"
+                  cols="30"
+                  className={`my-auto w-[50rem] p-2 border resize-none overflow-y-auto outline-none border-none ${isDarkMode ? "text-white bg-[#141517]" : "text-black bg-white"}`}
+                  onChange={(e) => setSubject(e.target.value)}
+                  value={replySubject}
+                />
+              </div>
 
-                                            <textarea
-                                                value={replyText}
-                                                onChange={(e) => setReplyText(e.target.value)}
-                                                rows="12"
-                                                cols="40"
-                                                placeholder="Type your reply here..."
-                                                className={`w-full px-[2rem] border-none outline-none rounded-lg resize-none overflow-y-auto ${isDarkMode ? "text-white bg-[#141517]" : "text-black bg-white"}`}
-                                            />
-                                        </div>
+              <textarea
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                rows="12"
+                cols="40"
+                placeholder="Type your reply here..."
+                className={`w-full px-[2rem] border-none outline-none rounded-lg resize-none overflow-y-auto ${isDarkMode ? "text-white bg-[#141517]" : "text-black bg-white"}`}
+              />
+            </div>
 
-                                        <div className={`border-t pt-[0.8rem] pb-[0.8rem] px-[2.5rem] ${isDarkMode ? "border-[#343A40]" : "border-[#D8D8D8]"}`}>
-                                            <span
-                                                className={`cursor-pointer py-[0.4rem] px-[2rem] mr-[1rem] rounded-sm bg-blue-600 text-white text-center ${sending ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                onClick={() => !sending && sendReply()}
-                                                disabled={sending}
-                                            >
-                                                {sending ? (
-                                                    <i className="fa-solid fa-spinner fa-spin text-[1rem]"></i>
-                                                ) : (
-                                                    <>Send</>
-                                                )}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        )}
+            <div className={`border-t pt-[0.8rem] pb-[0.8rem] px-[2.5rem] ${isDarkMode ? "border-[#343A40]" : "border-[#D8D8D8]"}`}>
+              <span
+                className={`cursor-pointer py-[0.4rem] px-[2rem] mr-[1rem] rounded-sm bg-blue-600 text-white text-center ${sending ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={() => !sending && sendReply()}
+                disabled={sending}
+              >
+                {sending ? (
+                  <i className="fa-solid fa-spinner fa-spin text-[1rem]"></i>
+                ) : (
+                  <>Send</>
+                )}
+              </span>
+              <span
+                className={`cursor-pointer py-[0.4rem] px-[2rem] rounded-sm bg-green-600 text-white text-center ${sending ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={handleSave}
+              >
+                Save
+              </span>
+            </div>
+          </div>
+        </div>
+      </>
+    )}
 
                     </div>
                     <div className="flex gap-4 sticky bottom-[2rem]  ">
