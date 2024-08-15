@@ -164,7 +164,7 @@ const Onebox = ({ isLoggedin, setLoggedin, isDarkMode, setMode }) => {
               }`}
           >
 
-            {Id == null ? (<div className={` ${isDarkMode ? 'bg-black text-white ' : 'bg-[#FFFFFF] text-black'} w-full h-full flex flex-col items-center justify-center`}><div>Choose a thread from the right sidebar</div>
+            {Id == null ? (<div className={` ${isDarkMode ? 'bg-black text-white ' : 'bg-[#FFFFFF] text-black'} w-full h-full flex flex-col items-center justify-center`}><div>Choose a thread from the left sidebar</div>
               <div>You can also choose to reset the data by refreshing/reloading this page</div></div>) : (<>
               {fetchingThread ? (<div className={` ${isDarkMode ? 'bg-black text-white ' : 'bg-[#FFFFFF] text-black'} w-full h-full flex flex-col items-center justify-center`}><i class="fa-solid fa-spinner fa-spin text-[2rem]"></i></div>) : (<>
                 <Thread setUserInfo={setUserInfo} userInfo={userInfo} thread={thread} openEditor={openEditor} setOpenEditor={setOpenEditor} setMails={setMails} Id={Id} setId={setId} mails={mails} isDarkMode={isDarkMode}></Thread>
